@@ -1,0 +1,14 @@
+{
+  "name": "Coherent Nexus - Vendor Management Platform",
+  "description": "Comprehensive enterprise vendor management system integrating recruitment, compliance, procurement, and commercial workflows.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "Vendor Onboarding",
+    "Staff Augmentation",
+    "Compliance Management",
+    "Resource Tracking"
+  ]
+}
