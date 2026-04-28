@@ -27,13 +27,21 @@ service cloud.firestore {
       return resource.data;
     }
 
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email.lower() == 'sakthikumar.k@coherent.in' || 
+        request.auth.token.email.lower().matches('.*@coherent\\.in$')
+      );
+    }
+
     // --- VENDORS ---
     match /vendors/{vendorId} {
       allow read: if isSignedIn();
-      allow create: if isSignedIn() && isEmailVerified() && isValidId(vendorId) && isValidVendor(incoming());
-      allow update: if isSignedIn() && isEmailVerified() && isValidVendor(incoming()) && (
+      allow create: if (isSignedIn() && isEmailVerified() && isValidId(vendorId) && isValidVendor(incoming()));
+      allow update: if (isSignedIn() && isEmailVerified() && isValidVendor(incoming()) && (
+        isAdmin() ||
         incoming().diff(existing()).affectedKeys().hasOnly(['status', 'category', 'ownerEmail'])
-      );
+      ));
     }
 
     function isValidVendor(data) {
@@ -45,24 +53,55 @@ service cloud.firestore {
 
     // --- TICKETS ---
     match /tickets/{ticketId} {
-      allow read: if isSignedIn() && (resource.data.vendorId == request.auth.uid || resource.data.ownerEmail == request.auth.token.email);
+      allow read: if isSignedIn();
       allow create: if isSignedIn() && isEmailVerified() && isValidId(ticketId) && isValidTicket(incoming());
       allow update: if isSignedIn() && isEmailVerified() && isValidTicket(incoming()) && (
-        (incoming().vendorId == existing().vendorId) &&
-        incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt', 'description', 'subject'])
+        isAdmin() ||
+        (incoming().vendorId == existing().vendorId && 
+         incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt', 'description', 'subject']))
       );
     }
 
     function isValidTicket(data) {
       return data.keys().hasAll(['id', 'vendorId', 'subject', 'status']) &&
-             data.subject is string && data.subject.size() <= 300 &&
+             data.subject is string && data.subject.size() <= 500 &&
              data.status in ['Open', 'In Progress', 'Awaiting Vendor', 'Resolved', 'Closed'];
     }
 
     // --- RESOURCES ---
     match /resources/{resourceId} {
       allow read: if isSignedIn();
-      allow write: if isSignedIn() && isEmailVerified(); // Simplified for now but should be hardened
+      allow write: if isAdmin() || (isSignedIn() && isEmailVerified());
+    }
+
+    // --- INVOICES ---
+    match /invoices/{invId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // --- PROCUREMENT ---
+    match /procurement/{reqId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // --- POSITIONS ---
+    match /positions/{posId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // --- CANDIDATES ---
+    match /candidates/{canId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // --- ONBOARDING ---
+    match /onboarding/{appId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
     }
   }
 }

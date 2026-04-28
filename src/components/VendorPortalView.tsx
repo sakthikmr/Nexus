@@ -6,8 +6,9 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../lib/utils.ts';
-import { db } from '../lib/firebase.ts';
+import { db, auth } from '../lib/firebase.ts';
 import { collection, onSnapshot, query, where, orderBy } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
 import { Ticket, ProcurementRequirement } from '../types.ts';
 
 export const VendorPortalView = () => {
@@ -16,24 +17,43 @@ export const VendorPortalView = () => {
   const [requirements, setRequirements] = useState<ProcurementRequirement[]>([]);
 
   React.useEffect(() => {
-    // For vendor portal, we strictly filter by vendorId (mocking V001 for now)
-    const vendorId = "V001";
-    
-    const tQuery = query(collection(db, 'tickets'), where('vendorId', '==', vendorId), orderBy('createdAt', 'desc'));
-    const unsubscribeTickets = onSnapshot(tQuery, (snapshot) => {
-      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Ticket));
-      setTickets(data);
-    });
+    let unsubscribeTickets: (() => void) | undefined;
+    let unsubscribeReqs: (() => void) | undefined;
 
-    const rQuery = query(collection(db, 'procurement'), orderBy('deadline', 'asc'));
-    const unsubscribeReqs = onSnapshot(rQuery, (snapshot) => {
-      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ProcurementRequirement));
-      setRequirements(data);
+    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+      if (unsubscribeTickets) unsubscribeTickets();
+      if (unsubscribeReqs) unsubscribeReqs();
+
+      if (!user) {
+        setTickets([]);
+        setRequirements([]);
+        return;
+      }
+
+      // For vendor portal, we strictly filter by vendorId (mocking V001 for now)
+      const vendorId = "V001";
+      
+      const tQuery = query(collection(db, 'tickets'), where('vendorId', '==', vendorId), orderBy('createdAt', 'desc'));
+      unsubscribeTickets = onSnapshot(tQuery, (snapshot) => {
+        const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Ticket));
+        setTickets(data);
+      }, (error) => {
+        console.error("Portal Tickets Sync Error:", error);
+      });
+
+      const rQuery = query(collection(db, 'procurement'), orderBy('deadline', 'asc'));
+      unsubscribeReqs = onSnapshot(rQuery, (snapshot) => {
+        const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ProcurementRequirement));
+        setRequirements(data);
+      }, (error) => {
+        console.error("Portal Procurement Sync Error:", error);
+      });
     });
 
     return () => {
-      unsubscribeTickets();
-      unsubscribeReqs();
+      unsubscribeAuth();
+      if (unsubscribeTickets) unsubscribeTickets();
+      if (unsubscribeReqs) unsubscribeReqs();
     };
   }, []);
 

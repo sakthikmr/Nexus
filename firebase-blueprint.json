@@ -76,6 +76,43 @@
         "budget": { "type": "string" }
       },
       "required": ["id", "title", "type", "status"]
+    },
+    "Position": {
+      "title": "Position",
+      "description": "An open job mandate.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "businessUnit": { "type": "string" },
+        "hiresNeeded": { "type": "string" },
+        "status": { "type": "string" }
+      },
+      "required": ["id", "title"]
+    },
+    "Candidate": {
+      "title": "Candidate",
+      "description": "A candidate in the recruitment funnel.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "positionId": { "type": "string" },
+        "status": { "type": "string" }
+      },
+      "required": ["id", "name", "positionId", "status"]
+    },
+    "Onboarding": {
+      "title": "Onboarding Application",
+      "description": "Vendor qualification request.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "vendorName": { "type": "string" },
+        "stage": { "type": "string" },
+        "progress": { "type": "number" }
+      },
+      "required": ["id", "vendorName", "stage"]
     }
   },
   "firestore": {
@@ -98,6 +135,18 @@
     "procurement": {
       "schema": "Procurement",
       "description": "Sourcing requirements."
+    },
+    "positions": {
+      "schema": "Position",
+      "description": "Open job mandates."
+    },
+    "candidates": {
+      "schema": "Candidate",
+      "description": "Talent pipeline."
+    },
+    "onboarding": {
+      "schema": "Onboarding",
+      "description": "Vendor onboarding queue."
     }
   }
 }

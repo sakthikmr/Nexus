@@ -1,5 +1,13 @@
 
-import { Resource, ProcurementRequirement, VendorBid, Contract, Invoice, Ticket } from '../types';
+import { Resource, ProcurementRequirement, VendorBid, Contract, Invoice, Ticket, Vendor, Position, Candidate } from '../types';
+
+export const MOCK_VENDORS: Vendor[] = [
+  { id: "V001", name: "Global Talent Solutions", status: "Active", category: "Contract Staffing", risk: "Low", score: 94, onboardingDate: "2024-03-15", location: "Global" },
+  { id: "V002", name: "TalentHive Inc", status: "Active", category: "IT Services", risk: "Low", score: 88, onboardingDate: "2024-02-10", location: "US" },
+  { id: "V003", name: "NexGen Resources", status: "Onboarding", category: "Specialized Tech", risk: "Med", score: 0, onboardingDate: "2024-04-20", location: "Asia" },
+  { id: "V004", name: "Quantum Cloud", status: "Active", category: "Cloud Services", risk: "Low", score: 97, onboardingDate: "2024-04-01", location: "EMEA" },
+  { id: "V005", name: "TechBridge Partners", status: "Suspended", category: "General Staffing", risk: "High", score: 65, onboardingDate: "2024-01-20", location: "LatAM" }
+];
 
 export const MOCK_RESOURCES: Resource[] = [
   { id: "RES-001", name: "Alex Rivera", role: "Senior Java Developer", status: "Deployed", customer: "Coherent Retail", billingStatus: "Active", billingRate: "95", skills: ["Java", "Spring Boot", "AWS"], source: "Internal", deploymentDate: "2024-01-15", joiningDate: "2023-06-10", recruiterId: "REC-01", location: "New York" },
@@ -59,3 +67,20 @@ export const MOCK_ANALYTICS = {
     { stage: 'Hired', count: 88 }
   ]
 };
+
+export const MOCK_POSITIONS: Position[] = [
+  { id: "POS-001", title: "Senior Java Developer", businessUnit: "Financial Services", openDate: "2024-04-10", hiresNeeded: 3, hiresFilled: 1, priority: "High", status: "Active" },
+  { id: "POS-002", title: "UX Designer", businessUnit: "Product Design", openDate: "2024-04-12", hiresNeeded: 1, hiresFilled: 0, priority: "Medium", status: "Active" },
+  { id: "POS-003", title: "DevOps Engineer", businessUnit: "Cloud Infrastructure", openDate: "2024-04-15", hiresNeeded: 2, hiresFilled: 0, priority: "High", status: "Active" }
+];
+
+export const MOCK_CANDIDATES: Candidate[] = [
+  { id: "CAN-001", name: "John Doe", positionId: "POS-001", stage: "Interview R1", status: "Interviewed", customerStatus: "Yet to Share", source: "Vendor", vendorId: "V001", lastUpdated: "2024-04-20", experience: "8", currentCompany: "Tech Corp", history: [] },
+  { id: "CAN-002", name: "Jane Smith", positionId: "POS-002", stage: "Discussion", status: "Shortlisted", customerStatus: "Shared", source: "Internal", vendorId: "V002", lastUpdated: "2024-04-21", experience: "5", currentCompany: "Design Studio", history: [] },
+  { id: "CAN-003", name: "Bob Wilson", positionId: "POS-003", stage: "Sourcing", status: "Sourced", customerStatus: "Yet to Share", source: "Referral", vendorId: "V004", lastUpdated: "2024-04-22", experience: "12", currentCompany: "Cloud Systems", history: [] }
+];
+
+export const MOCK_ONBOARDING = [
+  { id: "APP-V001", vendorName: "Global Talent Solutions", category: "Staffing", stage: "Under Review", progress: 65, submittedAt: "2024-04-20", riskScore: 24, tier: "Gold", docs: ["Cert.inc", "Tax_Compliance.pdf"] },
+  { id: "APP-V006", vendorName: "Logic Flow Systems", category: "Software", stage: "Submitted", progress: 20, submittedAt: "2024-04-25", riskScore: 42, tier: "Silver", docs: ["Company_Profile.pdf"] }
+];

@@ -47,6 +47,9 @@ import { ProcurementView } from './components/ProcurementView.tsx';
 import { TicketingView } from './components/TicketingView.tsx';
 import { VendorPortalView } from './components/VendorPortalView.tsx';
 
+import { db, auth, signInWithGoogle } from './lib/firebase.ts';
+import { onAuthStateChanged, signOut, User } from 'firebase/auth';
+
 const PERSONAS = [
   { id: 'SUPER_ADMIN', name: 'Super Admin', role: 'Global Infrastructure', color: 'bg-blue-600' },
   { id: 'RECRUITER', name: 'Sarah Miller', role: 'Staffing Specialist', color: 'bg-emerald-600' },
@@ -95,6 +98,35 @@ export default function App() {
   const [activePersona, setActivePersona] = useState(PERSONAS[0]);
   const [showPersonaMenu, setShowPersonaMenu] = useState(false);
   const [isPortalMode, setIsPortalMode] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+
+  React.useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      if (currentUser && currentUser.email?.endsWith('@coherent.in')) {
+        // Automatically sync persona if it's an admin email
+        setActivePersona(PERSONAS[0]);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const handleLogin = async () => {
+    try {
+      await signInWithGoogle();
+    } catch (err) {
+      console.error("Login failed", err);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+    } catch (err) {
+      console.error("Logout failed", err);
+    }
+  };
 
   // Permission Logic
   const canAccess = (module: ModuleType) => {
@@ -213,7 +245,22 @@ export default function App() {
           <div className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 px-2">System</div>
           <SidebarItem icon={HelpCircle} label="Help & SLA" active={false} onClick={() => {}} />
           {activePersona.id === 'SUPER_ADMIN' && <SidebarItem icon={Settings} label="Governance" active={activeModule === 'GOVERNANCE'} onClick={() => setActiveModule('GOVERNANCE')} />}
-          <SidebarItem icon={LogOut} label="Sign Out" active={false} onClick={() => {}} />
+          
+          {user ? (
+            <SidebarItem 
+              icon={LogOut} 
+              label="Sign Out" 
+              active={false} 
+              onClick={handleLogout} 
+            />
+          ) : (
+            <SidebarItem 
+              icon={ShieldAlert} 
+              label="Login to Sync" 
+              active={false} 
+              onClick={handleLogin} 
+            />
+          )}
         </div>
       </aside>
 
@@ -233,6 +280,14 @@ export default function App() {
           </div>
 
           <div className="flex items-center gap-6">
+            {!user && (
+              <button 
+                onClick={handleLogin}
+                className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-200"
+              >
+                Sign In
+              </button>
+            )}
             <div className="flex items-center gap-2">
                <button className="p-2.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all relative group">
                 <Bell size={20} />

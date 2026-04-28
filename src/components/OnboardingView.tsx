@@ -7,6 +7,9 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../lib/utils.ts';
 import { AssessmentReviewer } from './AssessmentReviewer.tsx';
+import { db, auth } from '../lib/firebase.ts';
+import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
 
 interface OnboardingApp {
   id: string;
@@ -21,18 +24,41 @@ interface OnboardingApp {
 }
 
 export const OnboardingView = () => {
-  const [apps, setApps] = useState<OnboardingApp[]>([]);
+  const [apps, setApps] = useState<OnboardingApp[]>(MOCK_ONBOARDING);
   const [selectedApp, setSelectedApp] = useState<OnboardingApp | null>(null);
   const [view, setView] = useState<'LIST' | 'DETAIL'>('LIST');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/onboarding')
-      .then(res => res.json())
-      .then(data => {
-        setApps(data);
+    let unsubscribeSnap: (() => void) | undefined;
+    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+      if (unsubscribeSnap) unsubscribeSnap();
+
+      if (!user) {
+        setApps(MOCK_ONBOARDING);
+        setLoading(false);
+        return;
+      }
+
+      const q = query(collection(db, 'onboarding'), orderBy('submittedAt', 'desc'));
+      unsubscribeSnap = onSnapshot(q, (snapshot) => {
+        if (!snapshot.empty) {
+          setApps(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as OnboardingApp)));
+        } else {
+          setApps(MOCK_ONBOARDING);
+        }
+        setLoading(false);
+      }, (error) => {
+        console.warn("Onboarding Firebase Read Failed, using mocks", error);
+        setApps(MOCK_ONBOARDING);
         setLoading(false);
       });
+    });
+
+    return () => {
+      unsubscribeAuth();
+      if (unsubscribeSnap) unsubscribeSnap();
+    };
   }, []);
 
   const getStageColor = (stage: string) => {

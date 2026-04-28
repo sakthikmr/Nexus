@@ -13,8 +13,9 @@ import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../lib/utils.ts';
 import { MOCK_ANALYTICS } from '../services/mockData.ts';
 
-import { db } from '../lib/firebase.ts';
+import { db, auth } from '../lib/firebase.ts';
 import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
 import { seedDatabase } from '../lib/seeding.ts';
 
 const COLORS = ['#2563eb', '#10b981', '#7c3aed', '#f59e0b', '#ef4444', '#06b6d4'];
@@ -29,11 +30,19 @@ export const DashboardOverview = () => {
 
   useEffect(() => {
     // Real-time synchronization for tickets to update KPI counters
-    const q = query(collection(db, 'tickets'), orderBy('createdAt', 'desc'));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      // In a real app, we'd process all collections to build analyticsData
-      // For now, we still rely on the mock trends but could update counters
-      console.log("Firebase synced tickets:", snapshot.size);
+    // Only listen if signed in, as tickets may be protected
+    let unsubscribeSnap: (() => void) | undefined;
+    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+      if (unsubscribeSnap) unsubscribeSnap();
+      
+      if (user) {
+        const q = query(collection(db, 'tickets'), orderBy('createdAt', 'desc'));
+        unsubscribeSnap = onSnapshot(q, (snapshot) => {
+          console.log("Firebase synced tickets:", snapshot.size);
+        }, (error) => {
+          console.warn("Dashboard Ticket Sync Error (Expected if not admin):", error);
+        });
+      }
     });
 
     fetch('/api/analytics/trends')
@@ -41,7 +50,10 @@ export const DashboardOverview = () => {
       .then(data => setAnalyticsData(data))
       .catch(() => setAnalyticsData(MOCK_ANALYTICS));
 
-    return () => unsubscribe();
+    return () => {
+      unsubscribeAuth();
+      if (unsubscribeSnap) unsubscribeSnap();
+    };
   }, []);
 
   const handleSeed = async () => {

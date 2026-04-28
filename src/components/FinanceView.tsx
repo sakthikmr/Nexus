@@ -10,8 +10,9 @@ import { Invoice } from '../types.ts';
 import { cn } from '../lib/utils.ts';
 import { MOCK_INVOICES } from '../services/mockData.ts';
 
-import { db } from '../lib/firebase.ts';
+import { db, auth } from '../lib/firebase.ts';
 import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
 
 export const FinanceView = () => {
   const [invoices, setInvoices] = useState<Invoice[]>(MOCK_INVOICES);
@@ -19,17 +20,30 @@ export const FinanceView = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    const q = query(collection(db, 'invoices'), orderBy('dueDate', 'desc'));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      if (!snapshot.empty) {
-        const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Invoice));
-        setInvoices(data);
+    let unsubscribeSnap: (() => void) | undefined;
+    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+      if (unsubscribeSnap) unsubscribeSnap();
+
+      if (!user) {
+        setInvoices(MOCK_INVOICES);
+        return;
       }
-    }, (error) => {
-      console.error("Finance Firebase Error:", error);
+
+      const q = query(collection(db, 'invoices'), orderBy('dueDate', 'desc'));
+      unsubscribeSnap = onSnapshot(q, (snapshot) => {
+        if (!snapshot.empty) {
+          const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Invoice));
+          setInvoices(data);
+        }
+      }, (error) => {
+        console.error("Finance Firebase Error:", error);
+      });
     });
 
-    return () => unsubscribe();
+    return () => {
+      unsubscribeAuth();
+      if (unsubscribeSnap) unsubscribeSnap();
+    };
   }, []);
 
   const filtered = invoices.filter(inv => {

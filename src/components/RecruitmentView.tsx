@@ -9,22 +9,59 @@ import { Position, Candidate } from '../types.ts';
 import { CandidateBoard } from './CandidateBoard.tsx';
 import { Candidate360 } from './Candidate360.tsx';
 import { cn } from '../lib/utils.ts';
+import { db, auth } from '../lib/firebase.ts';
+import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
+import { MOCK_POSITIONS, MOCK_CANDIDATES } from '../services/mockData.ts';
 
 export const RecruitmentView = () => {
-  const [positions, setPositions] = useState<Position[]>([]);
-  const [candidates, setCandidates] = useState<Candidate[]>([]);
+  const [positions, setPositions] = useState<Position[]>(MOCK_POSITIONS);
+  const [candidates, setCandidates] = useState<Candidate[]>(MOCK_CANDIDATES);
   const [view, setView] = useState<'POSITIONS' | 'PIPELINE'>('POSITIONS');
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    Promise.all([
-      fetch('/api/positions').then(res => res.json()),
-      fetch('/api/candidates').then(res => res.json())
-    ]).then(([posData, candData]) => {
-      setPositions(posData);
-      setCandidates(candData);
+    let unsubscribePos: (() => void) | undefined;
+    let unsubscribeCand: (() => void) | undefined;
+
+    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+      // Cleanup previous observers
+      if (unsubscribePos) unsubscribePos();
+      if (unsubscribeCand) unsubscribeCand();
+
+      if (!user) {
+        setPositions(MOCK_POSITIONS);
+        setCandidates(MOCK_CANDIDATES);
+        return;
+      }
+
+      // Sync Positions
+      const posQuery = query(collection(db, 'positions'), orderBy('openDate', 'desc'));
+      unsubscribePos = onSnapshot(posQuery, (snapshot) => {
+        if (!snapshot.empty) {
+          setPositions(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Position)));
+        }
+      }, (error) => {
+        console.error("Positions Sync Error:", error);
+      });
+
+      // Sync Candidates
+      const candQuery = query(collection(db, 'candidates'), orderBy('lastActivity', 'desc'));
+      unsubscribeCand = onSnapshot(candQuery, (snapshot) => {
+        if (!snapshot.empty) {
+          setCandidates(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Candidate)));
+        }
+      }, (error) => {
+        console.error("Candidates Sync Error:", error);
+      });
     });
+
+    return () => {
+      unsubscribeAuth();
+      if (unsubscribePos) unsubscribePos();
+      if (unsubscribeCand) unsubscribeCand();
+    };
   }, []);
 
   const filteredPositions = positions.filter(p => 

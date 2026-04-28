@@ -6,19 +6,47 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { Vendor } from '../types.ts';
 import { Vendor360View } from './Vendor360View.tsx';
+import { db, auth, handleFirestoreError, OperationType } from '../lib/firebase.ts';
+import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
+import { MOCK_VENDORS } from '../services/mockData.ts';
 
 export const VendorMasterView = () => {
-  const [vendors, setVendors] = useState<Vendor[]>([]);
+  const [vendors, setVendors] = useState<Vendor[]>(MOCK_VENDORS);
   const [loading, setLoading] = useState(true);
   const [selectedVendor, setSelectedVendor] = useState<Vendor | null>(null);
 
   useEffect(() => {
-    fetch('/api/vendors')
-      .then(res => res.json())
-      .then(data => {
-        setVendors(data);
+    let unsubscribeSnap: (() => void) | undefined;
+    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+      if (unsubscribeSnap) unsubscribeSnap();
+      
+      if (!user) {
+        setVendors(MOCK_VENDORS);
+        setLoading(false);
+        return;
+      }
+
+      const path = 'vendors';
+      const q = query(collection(db, path), orderBy('name'));
+      unsubscribeSnap = onSnapshot(q, (snapshot) => {
+        if (!snapshot.empty) {
+          const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Vendor));
+          setVendors(data);
+        } else {
+          setVendors(MOCK_VENDORS);
+        }
+        setLoading(false);
+      }, (error) => {
+        handleFirestoreError(error, OperationType.GET, path);
         setLoading(false);
       });
+    });
+
+    return () => {
+      unsubscribeAuth();
+      if (unsubscribeSnap) unsubscribeSnap();
+    };
   }, []);
 
   if (selectedVendor) {

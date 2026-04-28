@@ -10,8 +10,9 @@ import { Resource } from '../types.ts';
 import { cn } from '../lib/utils.ts';
 import { MOCK_RESOURCES } from '../services/mockData.ts';
 
-import { db } from '../lib/firebase.ts';
+import { db, auth } from '../lib/firebase.ts';
 import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
 
 export const StaffAugView = () => {
   const [resources, setResources] = useState<Resource[]>(MOCK_RESOURCES);
@@ -19,18 +20,30 @@ export const StaffAugView = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    const q = query(collection(db, 'resources'), orderBy('id'));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      if (!snapshot.empty) {
-        const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Resource));
-        setResources(data);
+    let unsubscribeSnap: (() => void) | undefined;
+    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+      if (unsubscribeSnap) unsubscribeSnap();
+
+      if (!user) {
+        setResources(MOCK_RESOURCES);
+        return;
       }
-    }, (error) => {
-      console.error("StaffAug Firebase Error:", error);
-      // Fallback to API or mock if needed is already handled by initial state
+
+      const q = query(collection(db, 'resources'), orderBy('id'));
+      unsubscribeSnap = onSnapshot(q, (snapshot) => {
+        if (!snapshot.empty) {
+          const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Resource));
+          setResources(data);
+        }
+      }, (error) => {
+        console.error("StaffAug Firebase Error:", error);
+      });
     });
 
-    return () => unsubscribe();
+    return () => {
+      unsubscribeAuth();
+      if (unsubscribeSnap) unsubscribeSnap();
+    };
   }, []);
 
   const filteredResources = resources.filter(r => {

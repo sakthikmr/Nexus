@@ -10,8 +10,9 @@ import { ProcurementRequirement, ProcurementType, ProcurementStatus } from '../t
 import { cn } from '../lib/utils.ts';
 import { MOCK_PROCUREMENT } from '../services/mockData.ts';
 
-import { db } from '../lib/firebase.ts';
+import { db, auth } from '../lib/firebase.ts';
 import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
 
 export const ProcurementView = () => {
   const [requirements, setRequirements] = useState<ProcurementRequirement[]>(MOCK_PROCUREMENT);
@@ -19,17 +20,30 @@ export const ProcurementView = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    const q = query(collection(db, 'procurement'), orderBy('deadline', 'asc'));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      if (!snapshot.empty) {
-        const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ProcurementRequirement));
-        setRequirements(data);
+    let unsubscribeSnap: (() => void) | undefined;
+    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+      if (unsubscribeSnap) unsubscribeSnap();
+
+      if (!user) {
+        setRequirements(MOCK_PROCUREMENT);
+        return;
       }
-    }, (error) => {
-      console.error("Procurement Firebase Error:", error);
+
+      const q = query(collection(db, 'procurement'), orderBy('deadline', 'asc'));
+      unsubscribeSnap = onSnapshot(q, (snapshot) => {
+        if (!snapshot.empty) {
+          const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ProcurementRequirement));
+          setRequirements(data);
+        }
+      }, (error) => {
+        console.error("Procurement Firebase Error:", error);
+      });
     });
 
-    return () => unsubscribe();
+    return () => {
+      unsubscribeAuth();
+      if (unsubscribeSnap) unsubscribeSnap();
+    };
   }, []);
 
   const getTypeIcon = (type: ProcurementType) => {

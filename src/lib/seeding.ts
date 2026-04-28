@@ -5,20 +5,30 @@ import {
   MOCK_RESOURCES, 
   MOCK_PROCUREMENT, 
   MOCK_INVOICES, 
-  MOCK_TICKETS 
+  MOCK_TICKETS,
+  MOCK_VENDORS,
+  MOCK_POSITIONS,
+  MOCK_CANDIDATES,
+  MOCK_ONBOARDING
 } from '../services/mockData';
 
 export const seedDatabase = async () => {
   console.log("Starting Seeding...");
   
-  // Check if data already exists to avoid duplicates (simplified check)
-  const ticketsSnap = await getDocs(query(collection(db, 'tickets'), limit(1)));
-  if (!ticketsSnap.empty) {
+  // Check if data already exists
+  const vendorsSnap = await getDocs(query(collection(db, 'vendors'), limit(1)));
+  if (!vendorsSnap.empty) {
     console.log("Data already seeded.");
     return;
   }
 
   const batch = writeBatch(db);
+
+  // Seed Vendors
+  MOCK_VENDORS.forEach(v => {
+    const ref = doc(db, 'vendors', v.id);
+    batch.set(ref, v);
+  });
 
   // Seed Resources
   MOCK_RESOURCES.forEach(res => {
@@ -42,6 +52,24 @@ export const seedDatabase = async () => {
   MOCK_TICKETS.forEach(tick => {
     const ref = doc(db, 'tickets', tick.id);
     batch.set(ref, tick);
+  });
+
+  // Seed Positions
+  MOCK_POSITIONS.forEach(pos => {
+    const ref = doc(db, 'positions', pos.id);
+    batch.set(ref, pos);
+  });
+
+  // Seed Candidates
+  MOCK_CANDIDATES.forEach(cand => {
+    const ref = doc(db, 'candidates', cand.id);
+    batch.set(ref, cand);
+  });
+
+  // Seed Onboarding
+  MOCK_ONBOARDING.forEach(app => {
+    const ref = doc(db, 'onboarding', app.id);
+    batch.set(ref, app);
   });
 
   await batch.commit();
