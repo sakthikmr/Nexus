@@ -1,0 +1,68 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper Functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isEmailVerified() {
+      return request.auth.token.email_verified == true;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // --- VENDORS ---
+    match /vendors/{vendorId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isEmailVerified() && isValidId(vendorId) && isValidVendor(incoming());
+      allow update: if isSignedIn() && isEmailVerified() && isValidVendor(incoming()) && (
+        incoming().diff(existing()).affectedKeys().hasOnly(['status', 'category', 'ownerEmail'])
+      );
+    }
+
+    function isValidVendor(data) {
+      return data.keys().hasAll(['id', 'name', 'status']) &&
+             data.id is string && data.id.size() <= 50 &&
+             data.name is string && data.name.size() <= 200 &&
+             data.status in ['Active', 'Onboarding', 'Suspended'];
+    }
+
+    // --- TICKETS ---
+    match /tickets/{ticketId} {
+      allow read: if isSignedIn() && (resource.data.vendorId == request.auth.uid || resource.data.ownerEmail == request.auth.token.email);
+      allow create: if isSignedIn() && isEmailVerified() && isValidId(ticketId) && isValidTicket(incoming());
+      allow update: if isSignedIn() && isEmailVerified() && isValidTicket(incoming()) && (
+        (incoming().vendorId == existing().vendorId) &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt', 'description', 'subject'])
+      );
+    }
+
+    function isValidTicket(data) {
+      return data.keys().hasAll(['id', 'vendorId', 'subject', 'status']) &&
+             data.subject is string && data.subject.size() <= 300 &&
+             data.status in ['Open', 'In Progress', 'Awaiting Vendor', 'Resolved', 'Closed'];
+    }
+
+    // --- RESOURCES ---
+    match /resources/{resourceId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() && isEmailVerified(); // Simplified for now but should be hardened
+    }
+  }
+}

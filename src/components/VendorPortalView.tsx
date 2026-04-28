@@ -2,13 +2,40 @@ import React, { useState } from 'react';
 import { 
   Users, UserPlus, FileText, Settings, Bell, Search, LayoutDashboard,
   MessageSquare, Briefcase, Plus, Send, Download, Globe, ShieldCheck,
-  ChevronRight, Calendar, Star, TrendingUp, HelpCircle
+  ChevronRight, Calendar, Star, TrendingUp, HelpCircle, ListTree, CreditCard
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../lib/utils.ts';
+import { db } from '../lib/firebase.ts';
+import { collection, onSnapshot, query, where, orderBy } from 'firebase/firestore';
+import { Ticket, ProcurementRequirement } from '../types.ts';
 
 export const VendorPortalView = () => {
-  const [activeTab, setActiveTab] = useState<'DASHBOARD' | 'REQUIREMENTS' | 'CANDIDATES' | 'INVOICES'>('DASHBOARD');
+  const [activeTab, setActiveTab] = useState<'DASHBOARD' | 'REQUIREMENTS' | 'CANDIDATES' | 'INVOICES' | 'TICKETS'>('DASHBOARD');
+  const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [requirements, setRequirements] = useState<ProcurementRequirement[]>([]);
+
+  React.useEffect(() => {
+    // For vendor portal, we strictly filter by vendorId (mocking V001 for now)
+    const vendorId = "V001";
+    
+    const tQuery = query(collection(db, 'tickets'), where('vendorId', '==', vendorId), orderBy('createdAt', 'desc'));
+    const unsubscribeTickets = onSnapshot(tQuery, (snapshot) => {
+      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Ticket));
+      setTickets(data);
+    });
+
+    const rQuery = query(collection(db, 'procurement'), orderBy('deadline', 'asc'));
+    const unsubscribeReqs = onSnapshot(rQuery, (snapshot) => {
+      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ProcurementRequirement));
+      setRequirements(data);
+    });
+
+    return () => {
+      unsubscribeTickets();
+      unsubscribeReqs();
+    };
+  }, []);
 
   return (
     <div className="fixed inset-0 bg-[#F8FAFC] z-[100] flex flex-col font-sans">
@@ -28,9 +55,9 @@ export const VendorPortalView = () => {
           <nav className="flex items-center gap-8">
              {[
                { id: 'DASHBOARD', label: 'Home', icon: LayoutDashboard },
-               { id: 'REQUIREMENTS', label: 'Requirements', icon: ListTreeIcon },
+               { id: 'REQUIREMENTS', label: 'Requirements', icon: ListTree },
                { id: 'CANDIDATES', label: 'Our Talent', icon: Users },
-               { id: 'INVOICES', label: 'Commercials', icon: CreditCardIcon },
+               { id: 'INVOICES', label: 'Commercials', icon: CreditCard },
                { id: 'TICKETS', label: 'Support Cases', icon: MessageSquare }
              ].map(item => (
                <button
@@ -87,10 +114,10 @@ export const VendorPortalView = () => {
               {/* Vendor Specific KPIs */}
               <div className="grid grid-cols-4 gap-6">
                 {[
-                  { label: 'Active RQs', value: '08', icon: ListTreeIcon, color: 'text-purple-600' },
-                  { label: 'Total Submissions', value: '244', icon: Users, color: 'text-blue-600' },
+                  { label: 'Active RQs', value: requirements.length, icon: ListTree, color: 'text-purple-600' },
+                  { label: 'Support Cases', value: tickets.length, icon: MessageSquare, color: 'text-blue-600' },
                   { label: 'Hiring Rate', value: '42%', icon: Star, color: 'text-amber-500' },
-                  { label: 'Unpaid Invoices', value: '03', icon: CreditCardIcon, color: 'text-emerald-500' }
+                  { label: 'Active Invoices', value: '03', icon: CreditCard, color: 'text-emerald-500' }
                 ].map((kpi, idx) => (
                   <div key={idx} className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm relative overflow-hidden group hover:border-purple-300 transition-all">
                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 font-mono group-hover:text-purple-400 transition-colors">{kpi.label}</p>
@@ -179,45 +206,40 @@ export const VendorPortalView = () => {
                 <button className="px-6 py-3 bg-purple-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-purple-200 flex items-center gap-2">
                    <Plus size={16} /> New Support Case
                 </button>
-              </div>
-
-              <div className="grid grid-cols-1 gap-6">
-                 {[
-                   { id: 'TICK-001', sub: 'Payment delay for INV-004', cat: 'Invoice Issue', status: 'In Progress', priority: 'High', date: '2 days ago' },
-                   { id: 'TICK-009', sub: 'Requirement Clarification: Node.js Dev', cat: 'Requirement Clarification', status: 'Resolved', priority: 'Medium', date: '5 days ago' }
-                 ].map(ticket => (
-                   <div key={ticket.id} className="bg-white p-6 rounded-3xl border border-slate-200 flex justify-between items-center group hover:border-purple-300 transition-all">
-                      <div className="flex items-center gap-6">
-                         <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 group-hover:bg-purple-600 group-hover:text-white transition-all">
-                            <MessageSquare size={20} />
-                         </div>
-                         <div>
-                            <div className="flex items-center gap-3 mb-1">
-                               <h4 className="font-bold text-slate-900">{ticket.sub}</h4>
-                               <span className={cn("px-2 py-0.5 rounded-lg text-[9px] font-black uppercase border", 
-                                 ticket.priority === 'High' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-slate-50 text-slate-500'
-                               )}>
-                                 {ticket.priority}
-                               </span>
-                            </div>
-                            <div className="flex items-center gap-3 text-[10px] font-bold text-slate-400 uppercase">
-                               <span className="text-purple-600">#{ticket.id}</span>
-                               <span>{ticket.cat}</span>
-                               <span>{ticket.date}</span>
-                            </div>
-                         </div>
-                      </div>
-                      <div className="flex items-center gap-4">
-                         <span className={cn("px-4 py-1.5 rounded-full text-[10px] font-black uppercase border", 
-                           ticket.status === 'Resolved' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-blue-50 text-blue-700 border-blue-100'
-                         )}>
-                            {ticket.status}
-                         </span>
-                         <button className="p-2 text-slate-400 hover:text-purple-600"><ChevronRight size={20} /></button>
-                      </div>
-                   </div>
-                 ))}
-              </div>
+              </div>               <div className="grid grid-cols-1 gap-6">
+                  {tickets.map(ticket => (
+                    <div key={ticket.id} className="bg-white p-6 rounded-3xl border border-slate-200 flex justify-between items-center group hover:border-purple-300 transition-all">
+                       <div className="flex items-center gap-6">
+                          <div className="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 group-hover:bg-purple-600 group-hover:text-white transition-all">
+                             <MessageSquare size={20} />
+                          </div>
+                          <div>
+                             <div className="flex items-center gap-3 mb-1">
+                                <h4 className="font-bold text-slate-900 line-clamp-1">{ticket.subject}</h4>
+                                <span className={cn("px-2 py-0.5 rounded-lg text-[9px] font-black uppercase border", 
+                                  ticket.priority === 'High' ? 'bg-red-50 text-red-600 border-red-100' : 'bg-slate-50 text-slate-500'
+                                )}>
+                                  {ticket.priority}
+                                </span>
+                             </div>
+                             <div className="flex items-center gap-3 text-[10px] font-bold text-slate-400 uppercase">
+                                <span className="text-purple-600 font-black">#{ticket.id}</span>
+                                <span>{ticket.category}</span>
+                                <span>{new Date(ticket.createdAt).toLocaleDateString()}</span>
+                             </div>
+                          </div>
+                       </div>
+                       <div className="flex items-center gap-4">
+                          <span className={cn("px-4 py-1.5 rounded-full text-[10px] font-black uppercase border", 
+                            ticket.status === 'Resolved' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-blue-50 text-blue-700 border-blue-100'
+                          )}>
+                             {ticket.status}
+                          </span>
+                          <button className="p-2 text-slate-400 hover:text-purple-600"><ChevronRight size={20} /></button>
+                       </div>
+                    </div>
+                  ))}
+               </div>
             </motion.div>
           )}
         </AnimatePresence>
@@ -233,11 +255,3 @@ export const VendorPortalView = () => {
     </div>
   );
 };
-
-const ListTreeIcon = ({ size }: { size: number }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12h18"/><path d="M3 6h18"/><path d="M3 18h18"/></svg>
-);
-
-const CreditCardIcon = ({ size }: { size: number }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
-);

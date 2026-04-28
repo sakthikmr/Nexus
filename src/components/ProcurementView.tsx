@@ -8,16 +8,28 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { ProcurementRequirement, ProcurementType, ProcurementStatus } from '../types.ts';
 import { cn } from '../lib/utils.ts';
+import { MOCK_PROCUREMENT } from '../services/mockData.ts';
+
+import { db } from '../lib/firebase.ts';
+import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 
 export const ProcurementView = () => {
-  const [requirements, setRequirements] = useState<ProcurementRequirement[]>([]);
+  const [requirements, setRequirements] = useState<ProcurementRequirement[]>(MOCK_PROCUREMENT);
   const [activeTab, setActiveTab] = useState<ProcurementType | 'ALL'>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    fetch('/api/procurement/requirements')
-      .then(res => res.json())
-      .then(data => setRequirements(data));
+    const q = query(collection(db, 'procurement'), orderBy('deadline', 'asc'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      if (!snapshot.empty) {
+        const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as ProcurementRequirement));
+        setRequirements(data);
+      }
+    }, (error) => {
+      console.error("Procurement Firebase Error:", error);
+    });
+
+    return () => unsubscribe();
   }, []);
 
   const getTypeIcon = (type: ProcurementType) => {

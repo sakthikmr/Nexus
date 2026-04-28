@@ -11,6 +11,11 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../lib/utils.ts';
+import { MOCK_ANALYTICS } from '../services/mockData.ts';
+
+import { db } from '../lib/firebase.ts';
+import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { seedDatabase } from '../lib/seeding.ts';
 
 const COLORS = ['#2563eb', '#10b981', '#7c3aed', '#f59e0b', '#ef4444', '#06b6d4'];
 
@@ -18,14 +23,39 @@ type DashboardTab = 'OVERVIEW' | 'RECRUITMENT' | 'FINANCIAL' | 'VENDORS' | 'TICK
 
 export const DashboardOverview = () => {
   const [activeTab, setActiveTab] = useState<DashboardTab>('OVERVIEW');
-  const [analyticsData, setAnalyticsData] = useState<any>(null);
+  const [analyticsData, setAnalyticsData] = useState<any>(MOCK_ANALYTICS);
   const [isExporting, setIsExporting] = useState(false);
+  const [isSeeding, setIsSeeding] = useState(false);
 
   useEffect(() => {
+    // Real-time synchronization for tickets to update KPI counters
+    const q = query(collection(db, 'tickets'), orderBy('createdAt', 'desc'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      // In a real app, we'd process all collections to build analyticsData
+      // For now, we still rely on the mock trends but could update counters
+      console.log("Firebase synced tickets:", snapshot.size);
+    });
+
     fetch('/api/analytics/trends')
       .then(res => res.json())
-      .then(data => setAnalyticsData(data));
+      .then(data => setAnalyticsData(data))
+      .catch(() => setAnalyticsData(MOCK_ANALYTICS));
+
+    return () => unsubscribe();
   }, []);
+
+  const handleSeed = async () => {
+    setIsSeeding(true);
+    try {
+      await seedDatabase();
+      alert("Database Seeded Successfully!");
+    } catch (err) {
+      console.error(err);
+      alert("Seeding failed. Check console.");
+    } finally {
+      setIsSeeding(false);
+    }
+  };
 
   const downloadReport = (title: string) => {
     setIsExporting(true);
@@ -75,6 +105,17 @@ export const DashboardOverview = () => {
               <Calendar size={16} className="text-slate-400" />
               <span className="text-[10px] font-black uppercase tracking-widest text-slate-600">May 2023 - Apr 2024</span>
            </div>
+           <button 
+             onClick={handleSeed}
+             disabled={isSeeding}
+             className={cn(
+               "px-6 py-4 rounded-3xl font-black text-[10px] uppercase tracking-widest transition-all flex items-center gap-2 shadow-xl",
+               isSeeding ? "bg-slate-100 text-slate-400 cursor-not-allowed" : "bg-purple-600 text-white hover:bg-purple-700 shadow-purple-500/20"
+             )}
+           >
+              {isSeeding ? <Clock size={16} className="animate-spin" /> : <ShieldCheck size={16} />}
+              {isSeeding ? 'Syncing...' : 'Seed Global Data'}
+           </button>
            <button 
              onClick={() => downloadReport('Executive Operational Summary')}
              disabled={isExporting}

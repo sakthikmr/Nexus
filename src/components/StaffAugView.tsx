@@ -8,16 +8,29 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { Resource } from '../types.ts';
 import { cn } from '../lib/utils.ts';
+import { MOCK_RESOURCES } from '../services/mockData.ts';
+
+import { db } from '../lib/firebase.ts';
+import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 
 export const StaffAugView = () => {
-  const [resources, setResources] = useState<Resource[]>([]);
+  const [resources, setResources] = useState<Resource[]>(MOCK_RESOURCES);
   const [view, setView] = useState<'DEPLOYED' | 'BENCH' | 'EXITED'>('DEPLOYED');
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    fetch('/api/resources')
-      .then(res => res.json())
-      .then(data => setResources(data));
+    const q = query(collection(db, 'resources'), orderBy('id'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      if (!snapshot.empty) {
+        const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Resource));
+        setResources(data);
+      }
+    }, (error) => {
+      console.error("StaffAug Firebase Error:", error);
+      // Fallback to API or mock if needed is already handled by initial state
+    });
+
+    return () => unsubscribe();
   }, []);
 
   const filteredResources = resources.filter(r => {
