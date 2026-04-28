@@ -93,7 +93,12 @@ export const MOCK_POSITIONS: Position[] = [
   { id: "POS-002", title: "UX Designer", businessUnit: "Product Design", openDate: "2024-04-12", hiresNeeded: 1, hiresFilled: 0, priority: "Medium", status: "Active" },
   { id: "POS-003", title: "DevOps Engineer", businessUnit: "Cloud Infrastructure", openDate: "2024-04-15", hiresNeeded: 2, hiresFilled: 0, priority: "High", status: "Active" },
   { id: "POS-004", title: "Business Analyst", businessUnit: "Global Operations", openDate: "2024-04-18", hiresNeeded: 5, hiresFilled: 2, priority: "Low", status: "Active" },
-  { id: "POS-005", title: "Security Specialist", businessUnit: "Cyber Security", openDate: "2024-04-20", hiresNeeded: 1, hiresFilled: 0, priority: "High", status: "Active" }
+  { id: "POS-005", title: "Security Specialist", businessUnit: "Cyber Security", openDate: "2024-04-20", hiresNeeded: 1, hiresFilled: 0, priority: "High", status: "Active" },
+  { id: "POS-006", title: "Data Scientist", businessUnit: "AI Lab", openDate: "2024-04-21", hiresNeeded: 2, hiresFilled: 0, priority: "Medium", status: "Active" },
+  { id: "POS-007", title: "React Frontend Dev", businessUnit: "Retail Web", openDate: "2024-04-22", hiresNeeded: 4, hiresFilled: 1, priority: "High", status: "Active" },
+  { id: "POS-008", title: "SAP Consultant", businessUnit: "Enterprise Apps", openDate: "2024-04-23", hiresNeeded: 1, hiresFilled: 0, priority: "High", status: "Active" },
+  { id: "POS-009", title: "QA Automation Lead", businessUnit: "Quality Org", openDate: "2024-04-24", hiresNeeded: 1, hiresFilled: 0, priority: "Medium", status: "Active" },
+  { id: "POS-010", title: "Network Architect", businessUnit: "Infrastructure", openDate: "2024-04-25", hiresNeeded: 1, hiresFilled: 0, priority: "Low", status: "Active" }
 ];
 
 export const MOCK_CANDIDATES: Candidate[] = [
@@ -130,7 +135,12 @@ export const MOCK_CONTRACTS: Contract[] = [
   { id: "CON-2024-002", vendorId: "V002", vendorName: "TalentHive Inc", customer: "FinBank Global", type: "SOW", startDate: "2024-02-01", endDate: "2024-12-31", status: "Active", value: "$850,000", attachments: [], obligations: ["Weekly reporting"] },
   { id: "CON-2024-003", vendorId: "V004", vendorName: "Quantum Cloud", customer: "HealthTech Solutions", type: "Work Order", startDate: "2024-04-01", endDate: "2025-03-31", status: "Active", value: "$240,000", attachments: [], obligations: ["ISO27001 compliance"] },
   { id: "CON-2024-004", vendorId: "V006", vendorName: "Logic Flow Systems", customer: "CloudCore Inc", type: "SOW", startDate: "2023-11-01", endDate: "2024-10-31", status: "Active", value: "$1,200,000", attachments: [], obligations: ["On-site presence"] },
-  { id: "CON-2024-005", vendorId: "V003", vendorName: "NexGen Resources", customer: "Internal", type: "NDA", startDate: "2024-04-20", endDate: "2029-04-20", status: "Pending Signature", value: "$0", attachments: [], obligations: ["Confidentiality"] }
+  { id: "CON-2024-005", vendorId: "V003", vendorName: "NexGen Resources", customer: "Internal", type: "NDA", startDate: "2024-04-20", endDate: "2029-04-20", status: "Pending Signature", value: "$0", attachments: [], obligations: ["Confidentiality"] },
+  { id: "CON-2024-006", vendorId: "V007", vendorName: "Cyber Armor", customer: "SafeCyber", type: "SOW", startDate: "2024-01-01", endDate: "2024-06-30", status: "Active", value: "$45,000", attachments: [], obligations: ["Monthly PenTest"] },
+  { id: "CON-2024-007", vendorId: "V008", vendorName: "Data Insight", customer: "FinBank Global", type: "Work Order", startDate: "2024-03-15", endDate: "2024-09-15", status: "Active", value: "$125,000", attachments: [], obligations: ["Data privacy"] },
+  { id: "CON-2024-008", vendorId: "V009", vendorName: "Future Staffing", customer: "Coherent Retail", type: "MSA", startDate: "2023-01-01", endDate: "2025-12-31", status: "Active", value: "$1,500,000", attachments: [], obligations: ["Diversity hiring"] },
+  { id: "CON-2024-009", vendorId: "V010", vendorName: "Outsource Pro", customer: "NextGen Logistics", type: "SOW", startDate: "2024-03-01", endDate: "2025-02-28", status: "Terminated", value: "$300,000", attachments: [], obligations: ["Service transition"] },
+  { id: "CON-2024-010", vendorId: "V001", vendorName: "Global Talent Solutions", customer: "CloudCore Inc", type: "SOW", startDate: "2024-05-01", endDate: "2024-12-31", status: "Draft", value: "$200,000", attachments: [], obligations: ["None specified"] }
 ];
 
 export const MOCK_INVOICES: Invoice[] = [
@@ -193,5 +203,25 @@ export const MOCK_ANALYTICS = {
 export const MOCK_ONBOARDING = [
   { id: "APP-V001", vendorName: "Global Talent Solutions", category: "Staffing", stage: "Under Review", progress: 65, submittedAt: "2024-04-20", riskScore: 24, tier: "Gold", docs: ["Cert.inc", "Tax_Compliance.pdf"] },
   { id: "APP-V006", vendorName: "Logic Flow Systems", category: "Software", stage: "Submitted", progress: 20, submittedAt: "2024-04-25", riskScore: 42, tier: "Silver", docs: ["Company_Profile.pdf"] },
-  { id: "APP-V007", vendorName: "Cyber Armor", category: "Security", stage: "Approved", progress: 100, submittedAt: "2024-01-01", riskScore: 12, tier: "Platinum", docs: ["ISO.pdf"] }
+  { id: "APP-V007", vendorName: "Cyber Armor", category: "Security", stage: "Approved", progress: 100, submittedAt: "2024-01-01", riskScore: 12, tier: "Platinum", docs: ["ISO.pdf"] },
+  { id: "APP-V011", vendorName: "Cloud Systems Inc", category: "Cloud", stage: "Registration", progress: 10, submittedAt: "2024-04-28", riskScore: 0, tier: "Pending", docs: [] },
+  { id: "APP-V012", vendorName: "Green Energy Corp", category: "Utilities", stage: "Assessment", progress: 45, submittedAt: "2024-04-15", riskScore: 30, tier: "Gold", docs: ["Policy.pdf"] },
+  { id: "APP-V013", vendorName: "Auto Drive Labs", category: "Automotive", stage: "Compliance Review", progress: 85, submittedAt: "2024-03-20", riskScore: 15, tier: "Platinum", docs: ["Safety_Audit.pdf"] },
+  { id: "APP-V014", vendorName: "Edu Vision Ltd", category: "Education", stage: "Clarification", progress: 55, submittedAt: "2024-04-05", riskScore: 40, tier: "Silver", docs: ["Curriculum.pdf"] },
+  { id: "APP-V015", vendorName: "NextGen Logistics", category: "Logistics", stage: "Draft", progress: 5, submittedAt: "2024-04-27", riskScore: 0, tier: "Pending", docs: [] },
+  { id: "APP-V016", vendorName: "Safe Cyber Ltd", category: "Cybersecurity", stage: "Rejected", progress: 90, submittedAt: "2023-12-15", riskScore: 85, tier: "None", docs: ["Failed_Audit.pdf"] },
+  { id: "APP-V017", vendorName: "Space Xplore", category: "Aerospace", stage: "Approved", progress: 100, submittedAt: "2024-02-10", riskScore: 5, tier: "Titanium", docs: ["Space_Agency_License.pdf"] }
+];
+
+export const MOCK_AUDIT_LOGS = [
+  { id: "LOG-001", timestamp: "2024-04-28T10:00:00Z", user: "Sarah Miller", action: "VENDOR_APPROVE", entity: "Vendor", entityId: "V001", details: "Onboarding approved for Global Talent Solutions" },
+  { id: "LOG-002", timestamp: "2024-04-28T10:30:00Z", user: "Marcus Chen", action: "INVOICE_PAID", entity: "Invoice", entityId: "INV-001", details: "Payment of $125,000 processed" },
+  { id: "LOG-003", timestamp: "2024-04-28T11:00:00Z", user: "Elena Vance", action: "CANDIDATE_HIRED", entity: "Candidate", entityId: "CAN-006", details: "Lucy van Pelt hired for Business Analyst role" },
+  { id: "LOG-004", timestamp: "2024-04-28T11:15:00Z", user: "Robert Lowe", action: "COMPLIANCE_ALARM", entity: "Vendor", entityId: "V005", details: "Risk score spiked to 85 for TechBridge Partners" },
+  { id: "LOG-005", timestamp: "2024-04-28T12:00:00Z", user: "Lisa Wong", action: "REQUIREMENT_PUBLISHED", entity: "Procurement", entityId: "REQ-010", details: "Employee Wellness App RFP published" },
+  { id: "LOG-006", timestamp: "2024-04-28T13:00:00Z", user: "John Smith", action: "BID_SUBMITTED", entity: "Bid", entityId: "BID-990", details: "Vendor V001 submitted bid for REQ-SOW-001" },
+  { id: "LOG-007", timestamp: "2024-04-28T13:45:00Z", user: "David Brent", action: "RESOURCE_DEPLOYED", entity: "Resource", entityId: "RES-001", details: "Alex Rivera deployed to Coherent Retail" },
+  { id: "LOG-008", timestamp: "2024-04-28T14:30:00Z", user: "Anna Scott", action: "CANDIDATE_SUBMITTED", entity: "Candidate", entityId: "CAN-025", details: "New referral Ronna Beckman added" },
+  { id: "LOG-009", timestamp: "2024-04-28T15:10:00Z", user: "Sarah Miller", action: "USER_ROLE_CHANGE", entity: "User", entityId: "U009", details: "User James Bond marked as Inactive" },
+  { id: "LOG-010", timestamp: "2024-04-28T16:00:00Z", user: "System", action: "SLA_BREACH", entity: "Ticket", entityId: "TICK-001", details: "Ticket T001 breached 24h response SLA" }
 ];

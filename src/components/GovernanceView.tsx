@@ -7,29 +7,34 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '../lib/utils.ts';
 
-type MasterType = 'VENDOR_CATS' | 'REC_STAGES' | 'SLA' | 'APPROVAL_MATRIX' | 'CONTRACTS';
+type MasterType = 'VENDOR_CATS' | 'REC_STAGES' | 'SLA' | 'APPROVAL_MATRIX' | 'CONTRACTS' | 'AUDIT_LOGS';
 
 export const GovernanceView = () => {
-  const [activeMaster, setActiveMaster] = useState<MasterType>('CONTRACTS');
+  const [activeMaster, setActiveMaster] = useState<MasterType>('AUDIT_LOGS');
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setLoading(true);
     let endpoint = '';
+    const base = '/api/v1/admin';
     switch(activeMaster) {
-      case 'REC_STAGES': endpoint = 'recruitment-stages'; break;
-      case 'VENDOR_CATS': endpoint = 'vendor-categories'; break;
-      case 'SLA': endpoint = 'sla'; break;
-      case 'CONTRACTS': endpoint = 'contracts'; break;
-      default: endpoint = 'recruitment-stages';
+      case 'REC_STAGES': endpoint = `${base}/masters/recruitment-stages`; break;
+      case 'VENDOR_CATS': endpoint = `${base}/masters/vendor-categories`; break;
+      case 'SLA': endpoint = `${base}/masters/sla`; break;
+      case 'CONTRACTS': endpoint = `/api/v1/finance/contracts`; break;
+      case 'AUDIT_LOGS': endpoint = `${base}/audit-logs`; break;
+      default: endpoint = `${base}/masters/recruitment-stages`;
     }
     
-    // Using simple fetch, assuming API routes exist for these
-    fetch(`/api/${endpoint === 'contracts' ? 'contracts' : 'masters/' + endpoint}`)
+    fetch(endpoint)
       .then(res => res.json())
       .then(d => {
         setData(d);
+        setLoading(false);
+      })
+      .catch(() => {
+        setData([]);
         setLoading(false);
       });
   }, [activeMaster]);
@@ -60,6 +65,7 @@ export const GovernanceView = () => {
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Configuration Modules</p>
               <nav className="space-y-1">
                 {[
+                  { id: 'AUDIT_LOGS', label: 'Platform Audit Logs', icon: Clock },
                   { id: 'CONTRACTS', label: 'Contract Lifecycle', icon: FileText },
                   { id: 'REC_STAGES', label: 'Recruitment Stages', icon: ListTree },
                   { id: 'VENDOR_CATS', label: 'Vendor Categories', icon: Layers },
@@ -103,7 +109,8 @@ export const GovernanceView = () => {
                      {activeMaster === 'CONTRACTS' ? 'Contract Lifecycle & Repository' :
                       activeMaster === 'REC_STAGES' ? 'Recruitment Stage Workflow' : 
                       activeMaster === 'VENDOR_CATS' ? 'Vendor Category Master' : 
-                      activeMaster === 'SLA' ? 'SLA Service Levels' : 'Approval Definitions'}
+                      activeMaster === 'SLA' ? 'SLA Service Levels' : 
+                      activeMaster === 'AUDIT_LOGS' ? 'System Audit Trails' : 'Approval Definitions'}
                    </h3>
                 </div>
                 <div className="flex gap-2">
@@ -155,6 +162,15 @@ export const GovernanceView = () => {
                             <th className="px-8 py-4 text-right">Actions</th>
                           </>
                         )}
+                        {activeMaster === 'AUDIT_LOGS' && (
+                          <>
+                            <th className="px-8 py-4">Timestamp</th>
+                            <th className="px-8 py-4">Identity</th>
+                            <th className="px-8 py-4">Protocol Action</th>
+                            <th className="px-8 py-4">Target Entity</th>
+                            <th className="px-8 py-4 text-right">Activity Trace</th>
+                          </>
+                        )}
                       </tr>
                    </thead>
                    <tbody className="divide-y divide-slate-50">
@@ -162,6 +178,39 @@ export const GovernanceView = () => {
                          <tr><td colSpan={5} className="text-center py-20 text-slate-400 italic">Reading master registry...</td></tr>
                       ) : data.map((item, idx) => (
                         <tr key={idx} className="hover:bg-slate-50/50 transition-colors group">
+                           {activeMaster === 'AUDIT_LOGS' && (
+                             <>
+                               <td className="px-8 py-5">
+                                 <div className="flex flex-col">
+                                   <span className="text-xs font-black text-slate-900">{new Date(item.timestamp).toLocaleDateString()}</span>
+                                   <span className="text-[10px] font-bold text-slate-400">{new Date(item.timestamp).toLocaleTimeString()}</span>
+                                 </div>
+                               </td>
+                               <td className="px-8 py-5">
+                                 <div className="flex items-center gap-2">
+                                   <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-black text-slate-500">
+                                     {item.user.split(' ').map((n: string) => n[0]).join('')}
+                                   </div>
+                                   <span className="text-xs font-bold text-slate-700">{item.user}</span>
+                                 </div>
+                               </td>
+                               <td className="px-8 py-5">
+                                 <span className={cn("px-2 py-1 rounded text-[9px] font-black uppercase tracking-tight", 
+                                   item.action.includes('APPROVE') ? "bg-emerald-50 text-emerald-600" :
+                                   item.action.includes('BREACH') ? "bg-red-50 text-red-600" :
+                                   "bg-blue-50 text-blue-600"
+                                 )}>
+                                   {item.action}
+                                 </span>
+                               </td>
+                               <td className="px-8 py-5 text-xs font-bold text-slate-500 uppercase tracking-tighter">
+                                 {item.entity} / {item.entityId}
+                               </td>
+                               <td className="px-8 py-5 text-right font-medium text-slate-600 text-xs italic">
+                                 "{item.details}"
+                               </td>
+                             </>
+                           )}
                            {activeMaster === 'CONTRACTS' && (
                              <>
                                <td className="px-8 py-5">

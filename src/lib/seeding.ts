@@ -11,7 +11,9 @@ import {
   MOCK_CANDIDATES,
   MOCK_ONBOARDING,
   MOCK_USERS,
-  MOCK_CUSTOMERS
+  MOCK_CUSTOMERS,
+  MOCK_CONTRACTS,
+  MOCK_AUDIT_LOGS
 } from '../services/mockData';
 
 export const seedDatabase = async () => {
@@ -25,6 +27,18 @@ export const seedDatabase = async () => {
   }
 
   const batch = writeBatch(db);
+
+  // Seed Audit Logs
+  MOCK_AUDIT_LOGS.forEach(log => {
+      const ref = doc(db, 'audit_logs', log.id);
+      batch.set(ref, log);
+  });
+
+  // Seed Contracts
+  MOCK_CONTRACTS.forEach(con => {
+      const ref = doc(db, 'contracts', con.id);
+      batch.set(ref, con);
+  });
 
   // Seed Users
   MOCK_USERS.forEach(u => {

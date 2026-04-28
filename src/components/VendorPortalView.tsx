@@ -12,7 +12,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { Ticket, ProcurementRequirement } from '../types.ts';
 
 export const VendorPortalView = () => {
-  const [activeTab, setActiveTab] = useState<'DASHBOARD' | 'REQUIREMENTS' | 'CANDIDATES' | 'INVOICES' | 'TICKETS'>('DASHBOARD');
+  const [activeTab, setActiveTab] = useState<'DASHBOARD' | 'OPPORTUNITIES' | 'TALENT' | 'FINANCE' | 'CONTRACTS' | 'SUPPORT'>('DASHBOARD');
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [requirements, setRequirements] = useState<ProcurementRequirement[]>([]);
 
@@ -75,10 +75,11 @@ export const VendorPortalView = () => {
           <nav className="flex items-center gap-8">
              {[
                { id: 'DASHBOARD', label: 'Home', icon: LayoutDashboard },
-               { id: 'REQUIREMENTS', label: 'Requirements', icon: ListTree },
-               { id: 'CANDIDATES', label: 'Our Talent', icon: Users },
-               { id: 'INVOICES', label: 'Commercials', icon: CreditCard },
-               { id: 'TICKETS', label: 'Support Cases', icon: MessageSquare }
+               { id: 'OPPORTUNITIES', label: 'Opportunities', icon: ListTree },
+               { id: 'TALENT', label: 'Talent', icon: Users },
+               { id: 'FINANCE', label: 'Finance', icon: CreditCard },
+               { id: 'CONTRACTS', label: 'Contracts', icon: FileText },
+               { id: 'SUPPORT', label: 'Support', icon: MessageSquare }
              ].map(item => (
                <button
                  key={item.id}
@@ -212,7 +213,7 @@ export const VendorPortalView = () => {
             </motion.div>
           )}
 
-          {activeTab === 'TICKETS' && (
+          {activeTab === 'SUPPORT' && (
             <motion.div 
                key="tickets-tab" 
                initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }}

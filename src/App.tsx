@@ -176,13 +176,15 @@ export default function App() {
         </div>
 
         <div className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 px-2">Core Platform</div>
-        <nav className="flex-1 space-y-1.5">
+        <nav className="flex-1 space-y-1.5 overflow-y-auto pr-2 custom-scrollbar">
           <SidebarItem 
             icon={LayoutDashboard} 
             label="Nexus Dashboard" 
             active={activeModule === 'DASHBOARD'} 
             onClick={() => setActiveModule('DASHBOARD')}
           />
+          
+          <div className="pt-4 pb-2 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-2">Vendors & Compliance</div>
           <SidebarItem 
             icon={Users} 
             label="Vendor Master" 
@@ -192,38 +194,10 @@ export default function App() {
           />
           <SidebarItem 
             icon={UserPlus} 
-            label="Onboarding Engine" 
+            label="Onboarding Pipeline" 
             active={activeModule === 'ONBOARDING'} 
             disabled={!canAccess('ONBOARDING')}
             onClick={() => setActiveModule('ONBOARDING')}
-          />
-          <SidebarItem 
-            icon={Users} 
-            label="Resource Deployment" 
-            active={activeModule === 'STAFF_AUG'} 
-            disabled={!canAccess('STAFF_AUG')}
-            onClick={() => setActiveModule('STAFF_AUG')}
-          />
-          <SidebarItem 
-            icon={ShoppingBag} 
-            label="Procurement Engine" 
-            active={activeModule === 'PROCUREMENT'} 
-            disabled={!canAccess('PROCUREMENT')}
-            onClick={() => setActiveModule('PROCUREMENT')}
-          />
-          <SidebarItem 
-            icon={MessageSquare} 
-            label="Nexus Helpdesk" 
-            active={activeModule === 'TICKETING'} 
-            disabled={!canAccess('TICKETING')}
-            onClick={() => setActiveModule('TICKETING')}
-          />
-          <SidebarItem 
-            icon={Briefcase} 
-            label="Recruitment Services" 
-            active={activeModule === 'RECRUITMENT'} 
-            disabled={!canAccess('RECRUITMENT')}
-            onClick={() => setActiveModule('RECRUITMENT')}
           />
           <SidebarItem 
             icon={ShieldCheck} 
@@ -232,12 +206,46 @@ export default function App() {
             disabled={!canAccess('COMPLIANCE')}
             onClick={() => setActiveModule('COMPLIANCE')}
           />
+
+          <div className="pt-4 pb-2 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-2">Talent & Recruitment</div>
+          <SidebarItem 
+            icon={Briefcase} 
+            label="Positions & Boards" 
+            active={activeModule === 'RECRUITMENT'} 
+            disabled={!canAccess('RECRUITMENT')}
+            onClick={() => setActiveModule('RECRUITMENT')}
+          />
+          <SidebarItem 
+            icon={UserCheck} 
+            label="Resource Bench" 
+            active={activeModule === 'STAFF_AUG'} 
+            disabled={!canAccess('STAFF_AUG')}
+            onClick={() => setActiveModule('STAFF_AUG')}
+          />
+
+          <div className="pt-4 pb-2 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-2">Finance & Sourcing</div>
+          <SidebarItem 
+            icon={ShoppingBag} 
+            label="Procurement Feed" 
+            active={activeModule === 'PROCUREMENT'} 
+            disabled={!canAccess('PROCUREMENT')}
+            onClick={() => setActiveModule('PROCUREMENT')}
+          />
           <SidebarItem 
             icon={FileText} 
             label="Commercial Center" 
             active={activeModule === 'FINANCE'} 
             disabled={!canAccess('FINANCE')}
             onClick={() => setActiveModule('FINANCE')}
+          />
+
+          <div className="pt-4 pb-2 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-2">Support & Ops</div>
+          <SidebarItem 
+            icon={MessageSquare} 
+            label="Nexus Helpdesk" 
+            active={activeModule === 'TICKETING'} 
+            disabled={!canAccess('TICKETING')}
+            onClick={() => setActiveModule('TICKETING')}
           />
         </nav>
 
