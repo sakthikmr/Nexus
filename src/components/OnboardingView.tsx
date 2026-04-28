@@ -11,6 +11,8 @@ import { db, auth } from '../lib/firebase.ts';
 import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 
+import { MOCK_ONBOARDING } from '../services/mockData.ts';
+
 interface OnboardingApp {
   id: string;
   vendorName: string;
