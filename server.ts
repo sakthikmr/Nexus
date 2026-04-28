@@ -481,6 +481,40 @@ async function startServer() {
 
   app.get("/api/tickets", (req, res) => res.json(tickets));
 
+  // Analytics Trend Data (12 Months)
+  const analyticsTrends = {
+    recruitment: [
+      { month: 'May', candidates: 45, hires: 12, budget: 45000 },
+      { month: 'Jun', candidates: 52, hires: 15, budget: 48000 },
+      { month: 'Jul', candidates: 48, hires: 10, budget: 42000 },
+      { month: 'Aug', candidates: 61, hires: 18, budget: 55000 },
+      { month: 'Sep', candidates: 55, hires: 14, budget: 50000 },
+      { month: 'Oct', candidates: 67, hires: 22, budget: 62000 },
+      { month: 'Nov', candidates: 72, hires: 25, budget: 68000 },
+      { month: 'Dec', candidates: 58, hires: 20, budget: 58000 },
+      { month: 'Jan', candidates: 65, hires: 19, budget: 60000 },
+      { month: 'Feb', candidates: 78, hires: 28, budget: 75000 },
+      { month: 'Mar', candidates: 85, hires: 32, budget: 82000 },
+      { month: 'Apr', candidates: 92, hires: 35, budget: 90000 },
+    ],
+    vendorsByCategory: [
+      { name: 'IT Services', value: 45 },
+      { name: 'Contract Staffing', value: 30 },
+      { name: 'Hardware', value: 15 },
+      { name: 'Facilities', value: 10 }
+    ],
+    funnelDropOff: [
+      { stage: 'Sourcing', count: 1200 },
+      { stage: 'Screening', count: 800 },
+      { stage: 'Interview', count: 450 },
+      { stage: 'Technical', count: 180 },
+      { stage: 'Offer', count: 95 },
+      { stage: 'Hired', count: 88 }
+    ]
+  };
+
+  app.get("/api/analytics/trends", (req, res) => res.json(analyticsTrends));
+
   app.get("/api/deployments", (req, res) => res.json([
     { id: "DEP-01", resourceId: "RES-001", customer: "Coherent Retail", date: "2024-04-18" },
     { id: "DEP-02", resourceId: "RES-002", customer: "FinBank Global", date: "2024-03-05" }
