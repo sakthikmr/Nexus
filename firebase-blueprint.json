@@ -1,152 +1,121 @@
+
 {
   "entities": {
-    "Vendor": {
-      "title": "Vendor",
-      "description": "A partner organization providing services or staff.",
+    "User": {
+      "title": "User",
+      "description": "System user representing internal staff or vendor personnel",
       "type": "object",
       "properties": {
         "id": { "type": "string" },
         "name": { "type": "string" },
-        "status": { "type": "string", "enum": ["Active", "Onboarding", "Suspended"] },
+        "email": { "type": "string" },
+        "roleId": { "type": "string" },
+        "status": { "type": "string", "enum": ["Active", "Inactive"] },
+        "lastLogin": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "email", "roleId", "status"]
+    },
+    "Vendor": {
+      "title": "Vendor",
+      "description": "Primary vendor organization profile",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "status": { "type": "string", "enum": ["Active", "Onboarding", "Pending Review", "Suspended", "Blacklisted"] },
         "category": { "type": "string" },
-        "ownerEmail": { "type": "string" },
-        "createdAt": { "type": "string" }
+        "risk": { "type": "string", "enum": ["Low", "Med", "High", "N/A"] },
+        "score": { "type": "number" },
+        "location": { "type": "string" }
       },
       "required": ["id", "name", "status"]
     },
-    "Resource": {
-      "title": "Resource",
-      "description": "A candidate or employee managed through the platform.",
-      "type": "object",
-      "properties": {
-        "id": { "type": "string" },
-        "name": { "type": "string" },
-        "role": { "type": "string" },
-        "status": { "type": "string" },
-        "vendorId": { "type": "string" },
-        "billingRate": { "type": "string" },
-        "skills": { "type": "array", "items": { "type": "string" } }
-      },
-      "required": ["id", "name", "vendorId"]
-    },
-    "Ticket": {
-      "title": "Support Ticket",
-      "description": "A support request or inquiry raised by a vendor.",
-      "type": "object",
-      "properties": {
-        "id": { "type": "string" },
-        "vendorId": { "type": "string" },
-        "vendorName": { "type": "string" },
-        "category": { "type": "string" },
-        "subject": { "type": "string" },
-        "priority": { "type": "string" },
-        "status": { "type": "string" },
-        "createdAt": { "type": "string" },
-        "updatedAt": { "type": "string" },
-        "assignedTo": { "type": "string" },
-        "slaBreached": { "type": "boolean" },
-        "isEscalated": { "type": "boolean" }
-      },
-      "required": ["id", "vendorId", "subject", "status"]
-    },
-    "Invoice": {
-      "title": "Invoice",
-      "description": "A commercial invoice from a vendor.",
-      "type": "object",
-      "properties": {
-        "id": { "type": "string" },
-        "invoiceNumber": { "type": "string" },
-        "vendorId": { "type": "string" },
-        "vendorName": { "type": "string" },
-        "amount": { "type": "number" },
-        "status": { "type": "string" },
-        "dueDate": { "type": "string" }
-      },
-      "required": ["id", "invoiceNumber", "vendorId", "amount", "status"]
-    },
-    "Procurement": {
-      "title": "Procurement Requirement",
-      "description": "A sourcing request for goods or services.",
-      "type": "object",
-      "properties": {
-        "id": { "type": "string" },
-        "title": { "type": "string" },
-        "type": { "type": "string" },
-        "status": { "type": "string" },
-        "budget": { "type": "string" }
-      },
-      "required": ["id", "title", "type", "status"]
-    },
-    "Position": {
-      "title": "Position",
-      "description": "An open job mandate.",
-      "type": "object",
-      "properties": {
-        "id": { "type": "string" },
-        "title": { "type": "string" },
-        "businessUnit": { "type": "string" },
-        "hiresNeeded": { "type": "string" },
-        "status": { "type": "string" }
-      },
-      "required": ["id", "title"]
-    },
     "Candidate": {
       "title": "Candidate",
-      "description": "A candidate in the recruitment funnel.",
+      "description": "Individual talent profile in the recruitment pipeline",
       "type": "object",
       "properties": {
         "id": { "type": "string" },
         "name": { "type": "string" },
         "positionId": { "type": "string" },
-        "status": { "type": "string" }
+        "stage": { "type": "string" },
+        "status": { "type": "string" },
+        "vendorId": { "type": "string" },
+        "experience": { "type": "string" }
       },
-      "required": ["id", "name", "positionId", "status"]
+      "required": ["id", "name", "positionId", "stage"]
     },
-    "Onboarding": {
-      "title": "Onboarding Application",
-      "description": "Vendor qualification request.",
+    "Invoice": {
+      "title": "Invoice",
+      "description": "Commercial billing document",
       "type": "object",
       "properties": {
         "id": { "type": "string" },
-        "vendorName": { "type": "string" },
-        "stage": { "type": "string" },
-        "progress": { "type": "number" }
+        "vendorId": { "type": "string" },
+        "amount": { "type": "number" },
+        "status": { "type": "string", "enum": ["Draft", "Submitted", "Under Review", "Approved", "Paid", "Disputed", "Overdue"] },
+        "dueDate": { "type": "string", "format": "date" }
       },
-      "required": ["id", "vendorName", "stage"]
+      "required": ["id", "vendorId", "amount", "status", "dueDate"]
+    },
+    "Requirement": {
+      "title": "Requirement",
+      "description": "Procurement requirement or SOW request",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "status": { "type": "string" },
+        "budget": { "type": "string" },
+        "deadline": { "type": "string", "format": "date" }
+      },
+      "required": ["id", "title", "status", "deadline"]
     }
   },
   "firestore": {
-    "vendors": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Global user profiles"
+    },
+    "/vendors/{vendorId}": {
       "schema": "Vendor",
-      "description": "Global vendor directory."
+      "description": "Vendor organization profiles"
     },
-    "resources": {
-      "schema": "Resource",
-      "description": "Deployed and benched resources."
+    "/vendors/{vendorId}/docs/{docId}": {
+      "schema": "object",
+      "description": "Compliance documents for a vendor"
     },
-    "tickets": {
-      "schema": "Ticket",
-      "description": "Vendor support queue."
-    },
-    "invoices": {
-      "schema": "Invoice",
-      "description": "Commercial billing records."
-    },
-    "procurement": {
-      "schema": "Procurement",
-      "description": "Sourcing requirements."
-    },
-    "positions": {
-      "schema": "Position",
-      "description": "Open job mandates."
-    },
-    "candidates": {
+    "/candidates/{canId}": {
       "schema": "Candidate",
-      "description": "Talent pipeline."
+      "description": "Talent database"
     },
-    "onboarding": {
-      "schema": "Onboarding",
-      "description": "Vendor onboarding queue."
+    "/candidates/{canId}/history/{histId}": {
+      "schema": "object",
+      "description": "Audit trail of candidate stage movements"
+    },
+    "/invoices/{invId}": {
+      "schema": "Invoice",
+      "description": "Financial billing records"
+    },
+    "/procurement/{reqId}": {
+      "schema": "Requirement",
+      "description": "Procurement requirements and RFQs"
+    },
+    "/procurement/{reqId}/bids/{bidId}": {
+      "schema": "object",
+      "description": "Vendor bids for a requirement"
+    },
+    "/tickets/{tickId}": {
+      "schema": "object",
+      "description": "Support tickets"
+    },
+    "/tickets/{tickId}/comments/{commId}": {
+      "schema": "object",
+      "description": "Conversation thread on a ticket"
+    },
+    "/audit_logs/{auditId}": {
+      "schema": "object",
+      "description": "Immutable system audit trail"
     }
   }
 }

@@ -9,7 +9,9 @@ import {
   MOCK_VENDORS,
   MOCK_POSITIONS,
   MOCK_CANDIDATES,
-  MOCK_ONBOARDING
+  MOCK_ONBOARDING,
+  MOCK_USERS,
+  MOCK_CUSTOMERS
 } from '../services/mockData';
 
 export const seedDatabase = async () => {
@@ -23,6 +25,18 @@ export const seedDatabase = async () => {
   }
 
   const batch = writeBatch(db);
+
+  // Seed Users
+  MOCK_USERS.forEach(u => {
+    const ref = doc(db, 'users', u.id);
+    batch.set(ref, u);
+  });
+
+  // Seed Customers
+  MOCK_CUSTOMERS.forEach(c => {
+    const ref = doc(db, 'customers', c.id);
+    batch.set(ref, c);
+  });
 
   // Seed Vendors
   MOCK_VENDORS.forEach(v => {

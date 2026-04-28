@@ -166,6 +166,26 @@ export interface Candidate {
   }[];
 }
 
+export interface Customer {
+  id: string;
+  name: string;
+  industry: string;
+  location: string;
+  status: 'Active' | 'Prospect' | 'Inactive';
+  accountManager: string;
+  activeDeployments: number;
+}
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  persona: string;
+  status: 'Active' | 'Inactive';
+  lastLogin?: string;
+}
+
 export interface Resource {
   id: string;
   candidateId?: string;
