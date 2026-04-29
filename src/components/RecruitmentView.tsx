@@ -76,85 +76,85 @@ export const RecruitmentView = () => {
   );
 
   return (
-    <div className="space-y-10 min-h-screen text-left">
+    <div className="space-y-8 min-h-screen text-left">
       {/* Module Header & KPIs */}
-      <div className="space-y-8">
+      <div className="space-y-6">
         <div className="flex justify-between items-end">
           <div className="text-left">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="p-2.5 bg-blue-100 text-blue-600 rounded-2xl shadow-sm border border-blue-200">
-                <Target size={22} />
+            <div className="flex items-center gap-2 mb-1">
+              <div className="p-2 bg-blue-100 text-blue-600 rounded-xl shadow-sm border border-blue-200">
+                <Target size={18} />
               </div>
-              <h2 className="text-4xl font-black text-slate-900 tracking-tight">Talent Acquisition</h2>
+              <h2 className="text-2xl font-black text-slate-900 tracking-tight">Talent</h2>
             </div>
-            <p className="text-slate-500 font-medium italic">Orchestrating Coherent's global human capital growth.</p>
+            <p className="text-slate-500 font-medium italic text-sm">Growth mandates.</p>
           </div>
           
-          <div className="flex bg-white border border-slate-200 rounded-2xl p-1.5 gap-1 shadow-sm">
+          <div className="flex bg-white border border-slate-200 rounded-xl p-1 gap-1 shadow-sm">
             <button 
               onClick={() => setView('POSITIONS')}
               className={cn(
-                "flex items-center gap-2 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
-                view === 'POSITIONS' ? "bg-slate-900 text-white shadow-xl" : "text-slate-500 hover:bg-slate-50"
+                "flex items-center gap-2 px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all",
+                view === 'POSITIONS' ? "bg-slate-900 text-white shadow-lg" : "text-slate-500 hover:bg-slate-50"
               )}
             >
-              <List size={14} /> Open Mandates
+              <List size={12} /> Open
             </button>
             <button 
               onClick={() => setView('PIPELINE')}
               className={cn(
-                "flex items-center gap-2 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
-                view === 'PIPELINE' ? "bg-slate-900 text-white shadow-xl" : "text-slate-500 hover:bg-slate-50"
+                "flex items-center gap-2 px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all",
+                view === 'PIPELINE' ? "bg-slate-900 text-white shadow-lg" : "text-slate-500 hover:bg-slate-50"
               )}
             >
-              <Trello size={14} /> Global Pipeline
+              <Trello size={12} /> Pipeline
             </button>
           </div>
         </div>
 
         {/* Tactical Overview Widgets */}
-        <div className="grid grid-cols-4 gap-6">
+        <div className="grid grid-cols-4 gap-4">
           {[
-            { label: 'Active Positions', value: positions.length, trend: '+2 this week', icon: Briefcase, color: 'text-blue-600' },
-            { label: 'Total Pipeline', value: candidates.length, trend: '42 fresh matches', icon: Users, color: 'text-indigo-600' },
-            { label: 'Interview Rate', value: '64%', trend: 'Avg 4.2 days to R1', icon: Activity, color: 'text-emerald-600' },
-            { label: 'Closing Time', value: '18d', trend: '-2d vs last month', icon: TrendingUp, color: 'text-amber-500' }
+            { label: 'Active', value: positions.length, trend: '+2', icon: Briefcase, color: 'text-blue-600' },
+            { label: 'Pipeline', value: candidates.length, trend: '42 matches', icon: Users, color: 'text-indigo-600' },
+            { label: 'Rate', value: '64%', trend: 'Avg 4.2d', icon: Activity, color: 'text-emerald-600' },
+            { label: 'Closing', value: '18d', trend: '-2d', icon: TrendingUp, color: 'text-amber-500' }
           ].map((stat, idx) => (
-            <div key={idx} className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm relative overflow-hidden group hover:border-blue-300 transition-all text-left">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 group-hover:text-blue-500 transition-colors uppercase">{stat.label}</p>
-              <div className="flex items-baseline gap-3">
-                <div className="text-3xl font-black text-slate-900 tracking-tighter">{stat.value}</div>
-                <div className="text-[10px] font-bold text-slate-400 italic">{stat.trend}</div>
+            <div key={idx} className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden group hover:border-blue-300 transition-all text-left">
+              <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1 group-hover:text-blue-500 transition-colors">{stat.label}</p>
+              <div className="flex items-baseline gap-2">
+                <div className="text-xl font-black text-slate-900 tracking-tighter">{stat.value}</div>
+                <div className="text-[8px] font-bold text-slate-400 italic">{stat.trend}</div>
               </div>
-              <stat.icon className="absolute -right-2 -bottom-2 text-slate-50 group-hover:text-blue-50 transition-all scale-150 rotate-12" size={48} />
+              <stat.icon className="absolute -right-2 -bottom-2 text-slate-50 group-hover:text-blue-50 transition-all scale-150 rotate-12" size={32} />
             </div>
           ))}
         </div>
       </div>
 
       {/* Main Content Area */}
-      <div className="space-y-6">
+      <div className="space-y-4">
         {/* Filter Bar */}
-        <div className="flex justify-between items-center gap-4">
-          <div className="flex-1 max-w-xl relative group">
-            <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" size={20} />
+        <div className="flex justify-between items-center gap-3">
+          <div className="flex-1 max-w-lg relative group">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" size={16} />
             <input 
               type="text" 
-              placeholder="Search by Position ID, Title, or Candidate Name..."
+              placeholder="Search talent..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-white border border-slate-200 rounded-2xl py-4 pl-14 pr-4 text-sm font-medium focus:ring-4 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all shadow-sm"
+              className="w-full bg-white border border-slate-200 rounded-xl py-2.5 pl-12 pr-4 text-[11px] font-medium focus:ring-4 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all shadow-sm"
             />
           </div>
-          <div className="flex gap-4">
-             <button className="px-6 py-4 bg-white border border-slate-200 rounded-2xl text-slate-600 font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 transition-all flex items-center gap-2 shadow-sm">
-                <Filter size={18} /> Filters
+          <div className="flex gap-2">
+             <button className="p-2.5 bg-white border border-slate-200 rounded-xl text-slate-600 font-black text-[9px] uppercase tracking-widest hover:bg-slate-50 transition-all shadow-sm">
+                <Filter size={16} />
              </button>
              <button 
                 onClick={() => setIsModalOpen(true)}
-                className="px-8 py-4 bg-blue-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-700 transition-all flex items-center gap-2 shadow-xl shadow-blue-500/20"
+                className="px-5 py-2.5 bg-blue-600 text-white rounded-xl font-black text-[9px] uppercase tracking-widest hover:bg-blue-700 transition-all flex items-center gap-2 shadow-xl shadow-blue-500/20"
               >
-                <Plus size={18} /> New Mandate
+                <Plus size={14} /> New Mandate
              </button>
           </div>
         </div>
@@ -163,64 +163,60 @@ export const RecruitmentView = () => {
           {view === 'POSITIONS' ? (
             <motion.div 
               key="pos-list"
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="grid grid-cols-1 lg:grid-cols-2 gap-8 pb-20"
+              exit={{ opacity: 0, y: -10 }}
+              className="grid grid-cols-1 lg:grid-cols-2 gap-4 pb-20"
             >
               {filteredPositions.map(pos => (
                 <div 
                    key={pos.id} 
-                   className="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm hover:border-blue-400 transition-all group relative overflow-hidden"
+                   className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm hover:border-blue-400 transition-all group relative overflow-hidden"
                 >
                   <div className="flex justify-between items-start relative z-10 text-left">
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-3">
+                    <div className="space-y-3 min-w-0">
+                      <div className="flex items-center gap-2">
                         <div className={cn(
-                          "px-3 py-1 rounded-full text-[10px] font-black uppercase border",
+                          "px-2 py-0.5 rounded-full text-[8px] font-black uppercase border",
                           pos.priority === 'High' || pos.priority === 'Critical' ? "bg-red-50 text-red-600 border-red-100" : "bg-blue-50 text-blue-600 border-blue-100"
                         )}>
-                          {pos.priority} Priority
+                          {pos.priority}
                         </div>
-                        <span className="text-[10px] font-bold text-slate-400 tracking-widest uppercase font-mono">ID: {pos.id}</span>
+                        <span className="text-[8px] font-bold text-slate-400 tracking-widest uppercase font-mono">ID: {pos.id}</span>
                       </div>
                       <div>
-                        <h3 className="text-2xl font-black text-slate-900 group-hover:text-blue-600 transition-colors tracking-tight uppercase leading-tight">{pos.title}</h3>
-                        <div className="flex items-center gap-4 mt-2 text-slate-500 font-bold text-xs uppercase tracking-tight">
-                           <span>{pos.businessUnit} Unit</span>
-                           <span className="w-1.5 h-1.5 bg-slate-200 rounded-full" />
-                           <span>Started {pos.openDate}</span>
+                        <h3 className="text-lg font-black text-slate-900 group-hover:text-blue-600 transition-colors tracking-tight uppercase leading-tight truncate">{pos.title}</h3>
+                        <div className="flex items-center gap-3 mt-1 text-slate-500 font-bold text-[10px] uppercase tracking-tight">
+                           <span>{pos.businessUnit}</span>
+                           <span className="w-1 h-1 bg-slate-200 rounded-full" />
+                           <span>{pos.openDate}</span>
                         </div>
                       </div>
                     </div>
-                    <div className="bg-slate-50 p-6 rounded-[2rem] text-center border border-slate-100 shrink-0 min-w-[100px] shadow-inner">
-                      <div className="text-3xl font-black text-slate-900 leading-none mb-1">{pos.hiresNeeded}</div>
-                      <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Slots</div>
+                    <div className="bg-slate-50 p-4 rounded-2xl text-center border border-slate-100 shrink-0 min-w-[70px] shadow-inner">
+                      <div className="text-xl font-black text-slate-900 leading-none mb-1">{pos.hiresNeeded}</div>
+                      <div className="text-[8px] font-black text-slate-400 uppercase tracking-widest">Slots</div>
                     </div>
                   </div>
 
-                  <div className="mt-10 pt-8 border-t border-slate-50 flex items-center justify-between relative z-10 text-left">
-                    <div className="flex items-center gap-8">
-                       <div className="flex -space-x-3">
+                  <div className="mt-6 pt-4 border-t border-slate-50 flex items-center justify-between relative z-10 text-left">
+                    <div className="flex items-center gap-4">
+                       <div className="flex -space-x-2">
                          {[1,2,3].map((_, i) => (
-                           <div key={i} className="w-10 h-10 rounded-full bg-slate-100 border-4 border-white flex items-center justify-center text-[10px] font-black text-slate-400 shadow-sm">JD</div>
+                           <div key={i} className="w-8 h-8 rounded-full bg-slate-100 border-2 border-white flex items-center justify-center text-[8px] font-black text-slate-400 shadow-sm">JD</div>
                          ))}
-                         <div className="w-10 h-10 rounded-full bg-blue-600 border-4 border-white flex items-center justify-center text-[10px] font-black text-white shadow-lg">+9</div>
                        </div>
                        <div>
-                         <p className="text-[10px] font-black text-slate-400 uppercase mb-1">Pipeline Health</p>
-                         <p className="text-xs font-black text-emerald-500 uppercase tracking-widest">Accelerated</p>
+                         <p className="text-[9px] font-black text-emerald-500 uppercase">Accelerated</p>
                        </div>
                     </div>
                     <button 
                       onClick={() => setView('PIPELINE')}
-                      className="flex items-center gap-2 text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] hover:translate-x-2 transition-transform"
+                      className="flex items-center gap-1.5 text-[9px] font-black text-blue-600 uppercase tracking-widest hover:translate-x-1 transition-transform"
                     >
-                      Manage Pipeline <ArrowUpRight size={18} />
+                      Pipeline <ArrowUpRight size={14} />
                     </button>
                   </div>
-
-                  <Briefcase size={120} className="absolute -right-4 -bottom-6 text-slate-50 group-hover:text-blue-50/40 transition-colors -rotate-12 scale-150" />
                 </div>
               ))}
             </motion.div>

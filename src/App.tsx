@@ -87,7 +87,7 @@ const SidebarItem = ({
     {active && (
       <motion.div 
         layoutId="active-nav-indicator" 
-        className="absolute -right-4 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-blue-600 rounded-l-full"
+        className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-white rounded-r-full"
       />
     )}
   </button>
@@ -165,21 +165,21 @@ export default function App() {
 
       {/* Sidebar */}
       <aside className={cn(
-        "w-72 bg-white border-r border-slate-200/60 flex flex-col p-6 z-20 shrink-0 transition-opacity duration-300", 
+        "w-64 bg-white border-r border-slate-200/60 flex flex-col p-5 z-20 shrink-0 transition-opacity duration-300", 
         isPortalMode ? "opacity-0 pointer-events-none" : "opacity-100"
       )}>
-        <div className="flex items-center gap-3 px-2 mb-12">
-          <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-200">
-            <Terminal className="text-white" size={22} />
+        <div className="flex items-center gap-3 px-2 mb-8">
+          <div className="w-9 h-9 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center shadow-lg shadow-blue-200">
+            <Terminal className="text-white" size={18} />
           </div>
           <div>
-            <h1 className="text-lg font-black tracking-tight text-slate-800 leading-none">NEXUS</h1>
-            <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">Coherent VMP</span>
+            <h1 className="text-base font-black tracking-tight text-slate-800 leading-none uppercase italic">NEXUS</h1>
+            <span className="text-[9px] font-black text-blue-600 uppercase tracking-widest leading-none">Coherent VMP</span>
           </div>
         </div>
 
-        <div className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 px-2">Core Platform</div>
-        <nav className="flex-1 space-y-1.5 overflow-y-auto pr-2 custom-scrollbar">
+        <div className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 px-2">Core Platform</div>
+        <nav className="flex-1 space-y-1 overflow-y-auto pr-2 custom-scrollbar scroll-smooth">
           <SidebarItem 
             icon={LayoutDashboard} 
             label="Nexus Dashboard" 
@@ -261,45 +261,44 @@ export default function App() {
         </div>
       </aside>
 
-      {/* Main Content Area */}
       <main className="flex-1 flex flex-col min-w-0">
         {/* Top Header */}
-        <header className="h-20 bg-white/70 backdrop-blur-md border-b border-slate-200/60 px-10 flex items-center justify-between z-10 shrink-0">
-          <div className="flex items-center gap-6 flex-1 max-w-2xl">
+        <header className="h-16 bg-white/70 backdrop-blur-md border-b border-slate-200/60 px-8 flex items-center justify-between z-10 shrink-0">
+          <div className="flex items-center gap-6 flex-1 max-w-xl">
             <div className="relative w-full group">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" size={18} />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" size={16} />
               <input 
                 type="text" 
-                placeholder="Global search across Nexus..."
-                className="w-full pl-12 pr-4 py-3 bg-slate-100/50 border border-transparent rounded-2xl focus:bg-white focus:border-blue-200 focus:ring-4 focus:ring-blue-500/5 transition-all outline-none text-sm font-medium"
+                placeholder="Global search..."
+                className="w-full pl-10 pr-4 py-2 bg-slate-100/50 border border-transparent rounded-xl focus:bg-white focus:border-blue-200 focus:ring-4 focus:ring-blue-500/5 transition-all outline-none text-[11px] font-medium"
               />
             </div>
           </div>
 
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-               <button className="p-2.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all relative group">
-                <Bell size={20} />
-                <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white ring-2 ring-red-500/20 ring-offset-0 animate-pulse"></span>
+               <button className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all relative group">
+                <Bell size={18} />
+                <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-red-500 rounded-full border-2 border-white ring-2 ring-red-500/20 ring-offset-0 animate-pulse"></span>
               </button>
             </div>
             
-            <div className="w-px h-8 bg-slate-200 mx-2" />
+            <div className="w-px h-6 bg-slate-200 mx-1" />
 
             {/* Persona Switcher */}
             <div className="relative">
               <button 
                 onClick={() => setShowPersonaMenu(!showPersonaMenu)}
-                className="flex items-center gap-3 p-1.5 pr-4 bg-white border border-slate-200 rounded-2xl hover:border-blue-300 transition-all group ring-offset-2 ring-blue-500/20 focus:ring-2"
+                className="flex items-center gap-2.5 p-1 pr-3 bg-white border border-slate-200 rounded-xl hover:border-blue-300 transition-all group ring-offset-2 ring-blue-500/20 focus:ring-2"
               >
-                <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center font-black text-white shadow-lg", activePersona.color)}>
+                <div className={cn("w-7 h-7 rounded-lg flex items-center justify-center font-black text-white text-[10px] shadow-md", activePersona.color)}>
                   {activePersona.name.substring(0, 1)}
                 </div>
-                <div className="text-left">
-                  <div className="text-sm font-bold text-slate-900 leading-tight">{activePersona.name}</div>
-                  <div className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">{activePersona.role}</div>
+                <div className="text-left hidden sm:block">
+                  <div className="text-[11px] font-black text-slate-900 leading-tight italic uppercase tracking-tighter">{activePersona.name}</div>
+                  <div className="text-[8px] font-black text-slate-400 uppercase tracking-tighter">{activePersona.role}</div>
                 </div>
-                <Users size={14} className="ml-2 text-slate-300 group-hover:text-blue-500 transition-colors" />
+                <ChevronRight size={12} className={cn("ml-1 text-slate-300 transition-transform", showPersonaMenu ? "rotate-90" : "rotate-0")} />
               </button>
 
               <AnimatePresence>
@@ -351,7 +350,7 @@ export default function App() {
         </header>
 
         {/* Dynamic Route Content */}
-        <div className="flex-1 overflow-y-auto px-10 py-10 scroll-smooth">
+        <div className="flex-1 overflow-y-auto px-8 py-8 scroll-smooth custom-scrollbar">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeModule + activePersona.id}
