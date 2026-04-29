@@ -47,7 +47,7 @@ import { ProcurementView } from './components/ProcurementView.tsx';
 import { TicketingView } from './components/TicketingView.tsx';
 import { VendorPortalView } from './components/VendorPortalView.tsx';
 
-import { db, auth, signInWithGoogle } from './lib/firebase.ts';
+import { db, auth, signInWithGoogle, autoLogin } from './lib/firebase.ts';
 import { onAuthStateChanged, signOut, User } from 'firebase/auth';
 
 const PERSONAS = [
@@ -106,6 +106,9 @@ export default function App() {
       if (currentUser && currentUser.email?.endsWith('@coherent.in')) {
         // Automatically sync persona if it's an admin email
         setActivePersona(PERSONAS[0]);
+      } else if (!currentUser) {
+        // Trigger background login if not authenticated
+        autoLogin();
       }
     });
 
@@ -254,21 +257,7 @@ export default function App() {
           <SidebarItem icon={HelpCircle} label="Help & SLA" active={false} onClick={() => {}} />
           {activePersona.id === 'SUPER_ADMIN' && <SidebarItem icon={Settings} label="Governance" active={activeModule === 'GOVERNANCE'} onClick={() => setActiveModule('GOVERNANCE')} />}
           
-          {user ? (
-            <SidebarItem 
-              icon={LogOut} 
-              label="Sign Out" 
-              active={false} 
-              onClick={handleLogout} 
-            />
-          ) : (
-            <SidebarItem 
-              icon={ShieldAlert} 
-              label="Login to Sync" 
-              active={false} 
-              onClick={handleLogin} 
-            />
-          )}
+          {/* Login/Logout functionality is now background automated */}
         </div>
       </aside>
 
@@ -288,14 +277,6 @@ export default function App() {
           </div>
 
           <div className="flex items-center gap-6">
-            {!user && (
-              <button 
-                onClick={handleLogin}
-                className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-200"
-              >
-                Sign In
-              </button>
-            )}
             <div className="flex items-center gap-2">
                <button className="p-2.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all relative group">
                 <Bell size={20} />

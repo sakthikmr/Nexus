@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth';
 import { getFirestore, doc, getDocFromServer } from 'firebase/firestore';
 import firebaseConfig from '../../firebase-applet-config.json';
 
@@ -7,6 +7,25 @@ const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
+
+export const autoLogin = async () => {
+  const email = import.meta.env.VITE_FIREBASE_AUTO_LOGIN_EMAIL;
+  const password = import.meta.env.VITE_FIREBASE_AUTO_LOGIN_PASSWORD;
+
+  if (!email || !password) {
+    console.warn("Auto-login credentials not found in environment.");
+    return null;
+  }
+
+  try {
+    const result = await signInWithEmailAndPassword(auth, email, password);
+    console.log("Auto-login successful:", result.user.email);
+    return result.user;
+  } catch (error) {
+    console.error("Auto-login failed:", error);
+    return null;
+  }
+};
 
 export enum OperationType {
   CREATE = 'create',
